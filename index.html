@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manga Downloader</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap 5 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+  <nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">📚 Manga Downloader</span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="alert alert-warning" role="alert">
+      <strong>Note:</strong> During your first attempt, your browser may show a message in the address bar asking if it should allow multiple downloads. Please choose <strong>"Allow"</strong> to enable smooth downloading for future runs.
+    </div>
+
+    <div class="card shadow">
+      <div class="card-body">
+        <form id="downloadForm" novalidate>
+          <div class="mb-3">
+            <label for="url" class="form-label">Manga Base URL</label>
+            <input type="url" class="form-control" id="url" placeholder="e.g. https://images.mangafreak.net/downloads/One_Piece_" required>
+            <div class="invalid-feedback">
+              Please enter a valid URL (must start with http or https).
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="start" class="form-label">Start Episode Number</label>
+            <input type="number" class="form-control" id="start" placeholder="e.g. 1000" required>
+            <div class="invalid-feedback">
+              Please enter a valid starting number.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="end" class="form-label">End Episode Number</label>
+            <input type="number" class="form-control" id="end" placeholder="e.g. 1002" required>
+            <div class="invalid-feedback">
+              Please enter a valid ending number.
+            </div>
+          </div>
+
+          <div id="rangeError" class="text-danger d-none mb-3">
+            Start episode must not be greater than End episode.
+          </div>
+
+          <button type="submit" class="btn btn-primary">Continue</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    document.getElementById('downloadForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const form = e.target;
+      const urlInput = document.getElementById('url');
+      const startInput = document.getElementById('start');
+      const endInput = document.getElementById('end');
+      const rangeError = document.getElementById('rangeError');
+
+      form.classList.remove('was-validated');
+      rangeError.classList.add('d-none');
+
+      const baseUrl = urlInput.value.trim();
+      const start = parseInt(startInput.value);
+      const end = parseInt(endInput.value);
+      const urlPattern = /^https?:\/\/.+/;
+
+      let valid = true;
+
+      if (!urlPattern.test(baseUrl)) {
+        urlInput.classList.add('is-invalid');
+        valid = false;
+      } else {
+        urlInput.classList.remove('is-invalid');
+      }
+
+      if (isNaN(start)) {
+        startInput.classList.add('is-invalid');
+        valid = false;
+      } else {
+        startInput.classList.remove('is-invalid');
+      }
+
+      if (isNaN(end)) {
+        endInput.classList.add('is-invalid');
+        valid = false;
+      } else {
+        endInput.classList.remove('is-invalid');
+      }
+
+      if (start > end) {
+        rangeError.classList.remove('d-none');
+        valid = false;
+      } else {
+        rangeError.classList.add('d-none');
+      }
+
+      if (!valid) {
+        form.classList.add('was-validated');
+        return;
+      }
+
+      for (let i = start; i <= end; i++) {
+        setTimeout(() => {
+          window.open(baseUrl + i, '_blank');
+        }, (i - start) * 1000);
+      }
+    });
+  </script>
+</body>
+</html>
